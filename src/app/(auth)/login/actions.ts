@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { createClient } from '@/utils/supabase/server';
 
-export async function login(formData: FormData) {
+export async function login(previousState: unknown, formData: FormData) {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -17,12 +17,11 @@ export async function login(formData: FormData) {
 
   const { error } = await supabase.auth.signInWithPassword(data);
 
-  console.log(error);
-
   if (error) {
-    redirect('/error');
+    return 'Invalid credentials.';
+  } else {
+    console.log('revalidatePath');
+    revalidatePath('/', 'layout');
+    redirect('/dashboard');
   }
-
-  revalidatePath('/', 'layout');
-  redirect('/private');
 }

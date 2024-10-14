@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,12 +11,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login } from './actions';
-import Link from 'next/link';
 
-export default function LoginPage() {
+import Link from 'next/link';
+import { useActionState } from 'react';
+
+const LoginPage = () => {
+  const [errorMessage, formAction, pending] = useActionState(login, undefined);
+
   return (
-    <form>
-      <Link href="/sign-up">Sign up</Link>
+    <form action={formAction}>
       <div className="flex h-screen w-full items-center justify-center px-4">
         <Card className="mx-auto max-w-sm">
           <CardHeader>
@@ -30,6 +35,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -44,9 +50,10 @@ export default function LoginPage() {
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" name="password" required />
               </div>
-              <Button type="submit" className="w-full" formAction={login}>
+              <div>{errorMessage && <p>{errorMessage}</p>}</div>
+              <Button type="submit" className="w-full" aria-disabled={pending}>
                 Login
               </Button>
               <Button variant="outline" className="w-full">
@@ -55,7 +62,7 @@ export default function LoginPage() {
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{' '}
-              <Link href="#" className="underline">
+              <Link href="/sign-up" className="underline">
                 Sign up
               </Link>
             </div>
@@ -64,4 +71,6 @@ export default function LoginPage() {
       </div>
     </form>
   );
-}
+};
+
+export default LoginPage;
